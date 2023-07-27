@@ -1,9 +1,10 @@
 package main
 
 import (
-	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,23 +17,16 @@ func main() {
 		var body map[string]interface{}
 		c.ShouldBindJSON(&body)
 		client := &http.Client{}
-		url := fmt.Sprintf("%s/?wc-api=%s", notifyUrl, uri)
-		fmt.Println(url)
-		req, _ := http.NewRequest(http.MethodPost, url, nil)
+		url := fmt.Sprintf("https://%s/?wc-api=%s", notifyUrl, uri)
+		jsonStr, _ := json.Marshal(&body)
+		req, _ := http.NewRequest(http.MethodPost, url, strings.NewReader(string(jsonStr)))
 		resp, err := client.Do(req)
 		if err != nil || resp.StatusCode == 404 {
 			c.String(404, "error")
 			return
+		} else {
+			c.String(200, "success")
 		}
-	})
-	router.GET("/template", func(ctx *gin.Context) {
-		base64url := ctx.Query("html")
-		b, err := base64.URLEncoding.DecodeString(base64url)
-		if err != nil {
-			fmt.Println("err")
-		}
-		ctx.Writer.Header().Set("Content-Type", "text/html; charset=Big5")
-		ctx.String(200, string(b))
 	})
 	router.Run(":10000")
 }
