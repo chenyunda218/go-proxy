@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,8 @@ func main() {
 		fmt.Println(notifyUrl, uri)
 		client := &http.Client{}
 		url := fmt.Sprintf("https://%s/?wc-api=%s", notifyUrl, uri)
+		b, _ := io.ReadAll(c.Request.Body)
+		fmt.Println(string(b))
 		req, _ := http.NewRequest(http.MethodPost, url, c.Copy().Request.Body)
 		resp, err := client.Do(req)
 		if err != nil || resp.StatusCode == 404 {
