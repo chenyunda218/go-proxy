@@ -12,6 +12,7 @@ func main() {
 	router.POST("/woocommerce-api/:notifyUrl/:uri", func(c *gin.Context) {
 		notifyUrl := c.Param("notifyUrl")
 		uri := c.Param("uri")
+		fmt.Println(notifyUrl, uri)
 		client := &http.Client{}
 		url := fmt.Sprintf("https://%s/?wc-api=%s", notifyUrl, uri)
 		req, _ := http.NewRequest(http.MethodPost, url, c.Copy().Request.Body)
